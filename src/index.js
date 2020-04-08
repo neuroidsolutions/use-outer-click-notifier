@@ -1,21 +1,20 @@
-import * as React from 'react'
+import * as React from "react";
 
-export const useOuterClickNotifier = () => {
-  let [{
-    counter
-  }, setState] = React.useState({
-    counter: 0
-  })
-
-  React.useEffect(() => {
-    let interval = window.setInterval(() => {
-      counter++
-      setState({counter})
-    }, 1000)
-    return () => {
-      window.clearInterval(interval)
-    }
-  }, [])
-
-  return counter
-}
+export const useOuterClickNotifier = (onOuterClick, innerRef) => {
+  React.useEffect(
+    () => {
+      if (innerRef.current) {
+        // add listener only, if element exists
+        document.addEventListener("click", handleClick);
+        // unmount previous listener first
+        return () => document.removeEventListener("click", handleClick);
+      }
+      function handleClick(e) {
+        innerRef.current &&
+          !innerRef.current.contains(e.target) &&
+          onOuterClick(e);
+      }
+    },
+    [onOuterClick, innerRef] // invoke again, if deps have changed
+  );
+};

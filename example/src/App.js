@@ -1,11 +1,19 @@
-import React from 'react'
-import { useMyHook } from 'use-outer-click-notifier'
+import React, { useRef, useCallback } from 'react'
+import { useOuterClickNotifier } from 'use-outer-click-notifier'
 
 const App = () => {
-  const example = useMyHook()
+  const innerRef = useRef(null)
+  const handleOuterClick = useCallback(
+    // memorized callback for optimized performance
+    e => {
+      window.alert('outside click')
+    },
+    [] // adjust deps to your needs
+  )
+  useOuterClickNotifier(handleOuterClick, innerRef)
   return (
     <div>
-      {example}
+      <div ref={innerRef} style={{ width: 100, height: 100 }} />
     </div>
   )
 }
